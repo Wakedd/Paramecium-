@@ -49,7 +49,7 @@ for(constauto& contour: contours)
 doubleaspectRatio= calculateAspectRatio(contour);
 if((cv::contourArea(contour) > g_minContourSize) && 
 (cv::contourArea(contour) < g_maxContourSize) &&
-(aspectRatio< g_aspectRatioThreshold)) // Check aspect ratio
+(aspectRatio< eg_aspectRatioThreshold)) // Check aspect ratio
 {
 cv::Scalar color = cv::Scalar(rand() % 256, rand() % 256, rand() % 256);
 cv::drawContours(g_contourImage, 
@@ -135,7 +135,7 @@ cv::createTrackbar("Minimum Contour Size", "Segmented Image",
 cv::createTrackbar("Maximum Contour Size", "Segmented Image", 
 &g_maxContourSize, 40000, onMaxContourSizeChange);
 cv::createTrackbar("Aspect Ratio Threshold", "Segmented Image", 
-&g_aspectRatioThreshold, 1.2, onAspectRatioThresholdChange);
+&eg_aspectRatioThreshold, 1.2, onAspectRatioThresholdChange);
 g_backgroundSubtractor = cv::createBackgroundSubtractorMOG2();
 while(true)
 {

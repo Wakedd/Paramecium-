@@ -50,7 +50,7 @@ for(constauto& contour: contours)
 doubleaspectRatio= calculateAspectRatio(contour);
 if((cv::contourArea(contour) > g_minContourSize) && 
 (cv::contourArea(contour) < g_maxContourSize) &&
-(aspectRatio< g_aspectRatioThreshold)) // Check aspect ratio
+(aspectRatio> g_aspectRatioThreshold && aspectRatio< 1.2)) // Check aspect ratio
 {
 cv::Scalar color = cv::Scalar(rand() % 256, rand() % 256, rand() % 256);
 cv::drawContours(g_contourImage, 

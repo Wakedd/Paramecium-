@@ -5,12 +5,12 @@ cv::Mat g_fgMask;
 cv::Mat g_thresholded;
 cv::Mat g_contourImage;
 cv::Mat g_outlinesimage;
-intg_thresholdValue= 132;
-intg_blurSize= 7;
-intg_fgMaskBlurSize= 13;
-intg_minContourSize= 50;
-intg_maxContourSize= 10000;
-int* valueg_aspectRatioThreshold = 0.8; // Added aspect ratio threshold 
+int g_thresholdValue= 132;
+int g_blurSize= 7;
+int g_fgMaskBlurSize= 13;
+int g_minContourSize= 50;
+int g_maxContourSize= 10000;
+int eg_aspectRatioThreshold = 0.8; // Added aspect ratio threshold 
 variable
 // Background Subtraction variables
 cv::Ptr<cv::BackgroundSubtractor> g_backgroundSubtractor;

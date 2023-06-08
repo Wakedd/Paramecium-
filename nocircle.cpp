@@ -14,9 +14,9 @@ int g_minContourSize = 50;
 int g_maxContourSize = 10000;
 int g_aspectRatioThreshold = 80; // Added aspect ratio threshold variable
 
-// Background Subtraction variables
-double g_aspectRatioThresholdDouble = (double)g_aspectRatioThreshold / 100.0;
 
+double g_aspectRatioThresholdDouble = (double)g_aspectRatioThreshold / 100.0;
+// Background Subtraction variables
 cv::Ptr<cv::BackgroundSubtractor> g_backgroundSubtractor;
 
 // Function to calculate the aspect ratio of a contour

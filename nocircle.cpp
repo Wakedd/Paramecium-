@@ -54,7 +54,7 @@ void processImage()
         double aspectRatio = calculateAspectRatio(contour);
         if ((cv::contourArea(contour) > g_minContourSize) &&
             (cv::contourArea(contour) < g_maxContourSize) &&
-            (aspectRatio < g_aspectRatioThreshold) ) // Check aspect ratio
+            (aspectRatio < 1.0 - g_aspectRatioThreshold) || (aspectRatio > 1.0 + g_aspectRatioThreshold)) ) // Check aspect ratio
         {
             cv::Scalar color = cv::Scalar(rand() % 256, rand() % 256, rand() % 256);
             cv::drawContours(g_contourImage, std::vector<std::vector<cv::Point>>{contour}, -1, color, cv::FILLED);

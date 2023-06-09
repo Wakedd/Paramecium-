@@ -22,6 +22,13 @@ cv::Ptr<cv::BackgroundSubtractor> g_backgroundSubtractor;
 // Log file
 std::ofstream g_logFile;
 
+// Vector to store centroids
+std::vector<cv::Point> g_centroids;
+
+// Variables for time calculation
+double g_videoStartTime = 0.0;
+double g_frameDuration = 0.0;
+
 // Function to threshold the image and find contours
 void processImage()
 {
@@ -52,16 +59,15 @@ void processImage()
             cv::circle(g_outlinesImage, centroid, 3, centroidColor, cv::FILLED);
 
             if (g_logFile.is_open()) {
-                double timestamp = static_cast<double>(cv::getTickCount()) / cv::getTickFrequency();
+                double timestamp = (cv::getTickCount() - g_videoStartTime) / cv::getTickFrequency();
                 int minutes = static_cast<int>(timestamp / 60);
                 int seconds = static_cast<int>(timestamp) % 60;
-                int milliseconds = static_cast<int>((timestamp - static_cast<int>(timestamp)) * 1000);
 
                 g_logFile << g_centroidID << ", " << centroid.x << ", " << centroid.y << ", "
-                          << minutes << ":" << seconds << "." << milliseconds << std::endl;
+                          << minutes << ":" << seconds << std::endl;
 
                 std::cout << "Centroid logged: ID=" << g_centroidID << ", X=" << centroid.x << ", Y=" << centroid.y
-                          << ", Time=" << minutes << ":" << seconds << "." << milliseconds << std::endl;
+                          << ", Time=" << minutes << ":" << seconds << std::endl;
 
                 g_centroidID++;
             }
@@ -137,10 +143,11 @@ void onKey(int key)
             g_logFile.close();
             std::cout << "Log file closed." << std::endl;
         } else {
-            g_logFile.open("logg.csv", std::ios::app);
+            g_logFile.open("log.csv", std::ios::app);
             if (g_logFile.is_open()) {
                 std::cout << "Log file opened." << std::endl;
                 g_logFile << "ID, X, Y, Time" << std::endl;
+                g_videoStartTime = cv::getTickCount();
             } else {
                 std::cout << "Error opening log file!" << std::endl;
             }

@@ -26,15 +26,12 @@ std::ofstream g_logFile;
 void processImage()
 {
     cv::Mat blurred;
-    cv::GaussianBlur(g_frame, blurred, cv::Size(g_blurSize, g_blurSize), 
-0);
+    cv::GaussianBlur(g_frame, blurred, cv::Size(g_blurSize, g_blurSize), 0);
 
-    cv::threshold(blurred, g_thresholded, g_thresholdValue, 255, 
-cv::THRESH_BINARY_INV);
+    cv::threshold(blurred, g_thresholded, g_thresholdValue, 255, cv::THRESH_BINARY_INV);
 
     std::vector<std::vector<cv::Point>> contours;
-    cv::findContours(g_thresholded, contours, cv::RETR_EXTERNAL, 
-cv::CHAIN_APPROX_SIMPLE);
+    cv::findContours(g_thresholded, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
     g_contourImage = cv::Mat::zeros(g_frame.size(), CV_8UC3);
     cv::Scalar contourColor = cv::Scalar(0, 165, 255);
@@ -43,29 +40,29 @@ cv::CHAIN_APPROX_SIMPLE);
     cv::cvtColor(g_frame, g_outlinesImage, cv::COLOR_GRAY2BGR);
 
     for (const auto& contour : contours) {
-        if ((cv::contourArea(contour) > g_minContourSize) && 
-(cv::contourArea(contour) < g_maxContourSize)) {
-            cv::Scalar color = cv::Scalar(rand() % 256, rand() % 256, 
-rand() % 256);
-            cv::drawContours(g_contourImage, 
-std::vector<std::vector<cv::Point>>{contour}, -1, color, cv::FILLED);
+        if ((cv::contourArea(contour) > g_minContourSize) && (cv::contourArea(contour) < g_maxContourSize)) {
+            cv::Scalar color = cv::Scalar(rand() % 256, rand() % 256, rand() % 256);
+            cv::drawContours(g_contourImage, std::vector<std::vector<cv::Point>>{contour}, -1, color, cv::FILLED);
 
-            cv::drawContours(g_outlinesImage, 
-std::vector<std::vector<cv::Point>>{contour}, -1, contourColor, 2);
+            cv::drawContours(g_outlinesImage, std::vector<std::vector<cv::Point>>{contour}, -1, contourColor, 2);
 
             cv::Moments moments = cv::moments(contour);
-            cv::Point centroid(moments.m10 / moments.m00, moments.m01 / 
-moments.m00);
+            cv::Point centroid(moments.m10 / moments.m00, moments.m01 / moments.m00);
 
-            cv::circle(g_outlinesImage, centroid, 3, centroidColor, 
-cv::FILLED);
+            cv::circle(g_outlinesImage, centroid, 3, centroidColor, cv::FILLED);
 
             if (g_logFile.is_open()) {
-                g_logFile << g_centroidID << ", " << centroid.x << ", " << 
-centroid.y << ", " << cv::getTickCount() << std::endl;
-                std::cout << "Centroid logged: ID=" << g_centroidID << ", 
-X=" << centroid.x << ", Y=" << centroid.y << ", Time=" << 
-cv::getTickCount() << std::endl;
+                double timestamp = static_cast<double>(cv::getTickCount()) / cv::getTickFrequency();
+                int minutes = static_cast<int>(timestamp / 60);
+                int seconds = static_cast<int>(timestamp) % 60;
+                int milliseconds = static_cast<int>((timestamp - static_cast<int>(timestamp)) * 1000);
+
+                g_logFile << g_centroidID << ", " << centroid.x << ", " << centroid.y << ", "
+                          << minutes << ":" << seconds << "." << milliseconds << std::endl;
+
+                std::cout << "Centroid logged: ID=" << g_centroidID << ", X=" << centroid.x << ", Y=" << centroid.y
+                          << ", Time=" << minutes << ":" << seconds << "." << milliseconds << std::endl;
+
                 g_centroidID++;
             }
         }
@@ -108,8 +105,7 @@ void onFgMaskBlurSizeChange(int, void*)
     if (g_fgMaskBlurSize < 3)
         g_fgMaskBlurSize = 3;
 
-    cv::setTrackbarPos("Foreground Mask Blur Size", "Segmented Image", 
-g_fgMaskBlurSize);
+    cv::setTrackbarPos("Foreground Mask Blur Size", "Segmented Image", g_fgMaskBlurSize);
     processImage();
 }
 
@@ -127,8 +123,7 @@ void onMaxContourSize(int, void*)
 // Mouse callback function
 void onMouse(int event, int x, int y, int flags, void* userdata)
 {
-    if (event == cv::EVENT_MOUSEMOVE)
-    {
+    if (event == cv::EVENT_MOUSEMOVE) {
         g_mouseX = x;
         g_mouseY = y;
     }
@@ -166,16 +161,12 @@ int main()
     cv::namedWindow("Video", cv::WINDOW_NORMAL);
     cv::namedWindow("Segmented Image", cv::WINDOW_NORMAL);
 
-    cv::createTrackbar("Threshold", "Segmented Image", &g_thresholdValue, 
-255, onThresholdChange);
-    cv::createTrackbar("Blur Size", "Segmented Image", &g_blurSize, 15, 
-onBlurSizeChange);
-    cv::createTrackbar("Foreground Mask Blur Size", "Segmented Image", 
-&g_fgMaskBlurSize, 15, onFgMaskBlurSizeChange);
-    cv::createTrackbar("Minimum Contour Size", "Segmented Image", 
-&g_minContourSize, 500, onMinContourSizeChange);
-    cv::createTrackbar("Maximum Contour Size", "Segmented Image", 
-&g_maxContourSize, 40000, onMaxContourSize);
+    cv::createTrackbar("Threshold", "Segmented Image", &g_thresholdValue, 255, onThresholdChange);
+    cv::createTrackbar("Blur Size", "Segmented Image", &g_blurSize, 15, onBlurSizeChange);
+    cv::createTrackbar("Foreground Mask Blur Size", "Segmented Image", &g_fgMaskBlurSize, 15,
+                       onFgMaskBlurSizeChange);
+    cv::createTrackbar("Minimum Contour Size", "Segmented Image", &g_minContourSize, 500, onMinContourSizeChange);
+    cv::createTrackbar("Maximum Contour Size", "Segmented Image", &g_maxContourSize, 40000, onMaxContourSize);
 
     g_backgroundSubtractor = cv::createBackgroundSubtractorMOG2();
 
@@ -203,4 +194,3 @@ onBlurSizeChange);
 
     return 0;
 }
-
